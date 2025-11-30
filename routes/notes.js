@@ -6,10 +6,10 @@ const router = express.Router();
 
 // Create a new note - Admin only
 router.post('/', auth, admin, async (req, res) => {
-  const { title, classLevel, subject, googleDriveLink } = req.body;
-  console.log('Creating note with data:', { title, classLevel, subject, googleDriveLink });
+  const { title, classLevel, subject, chapter, order, googleDriveLink } = req.body;
+  console.log('Creating note with data:', { title, classLevel, subject, chapter, order, googleDriveLink });
   try {
-    const note = new Note({ title, classLevel, subject, googleDriveLink });
+    const note = new Note({ title, classLevel, subject, chapter, order, googleDriveLink });
     await note.save();
     console.log('Note saved successfully:', note);
     res.status(201).json(note);
@@ -26,7 +26,8 @@ router.get('/', async (req, res) => {
   if (subject) query.subject = subject;
   if (title) query.title = { $regex: title, $options: 'i' };
   try {
-    const notes = await Note.find(query);
+    // Sort by order (ascending) then by title (ascending)
+    const notes = await Note.find(query).sort({ order: 1, title: 1 });
     res.json(notes);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch notes' });

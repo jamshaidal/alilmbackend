@@ -15,13 +15,14 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split
 ]).map(o => o.trim());
 
 const corsOptions = {
-  origin: function(origin, callback) {
-    // Allow all origins
+  origin: function (origin, callback) {
+    // Allow all origins for now to ensure smooth deployment
     callback(null, true);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'range'],
   exposedHeaders: ['Content-Range', 'Accept-Ranges'],
+  credentials: true,
   optionsSuccessStatus: 204,
 };
 
