@@ -19,7 +19,7 @@ async function resetAdminPassword() {
   const cliEmail = process.argv[2];
   const cliPassword = process.argv[3];
   const email = cliEmail || process.env.ADMIN_EMAIL || 'alilmacadmy@gmail.com';
-  const password = cliPassword || process.env.ADMIN_PASSWORD || '*Aa786Aa#';
+  const password = cliPassword || process.env.ADMIN_PASSWORD || 'Aa786Aa';
   const hash = await bcrypt.hash(password, 10);
   let user = await User.findOne({ email });
   if (!user) {
