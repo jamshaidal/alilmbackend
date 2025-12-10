@@ -6,10 +6,10 @@ const router = express.Router();
 
 // Create a new note - Admin only
 router.post('/', auth, admin, async (req, res) => {
-  const { title, classLevel, subject, chapter, order, googleDriveLink } = req.body;
-  console.log('Creating note with data:', { title, classLevel, subject, chapter, order, googleDriveLink });
+  const { title, classLevel, group, subject, category, chapter, order, googleDriveLink } = req.body;
+  console.log('Creating note with data:', { title, classLevel, group, subject, category, chapter, order, googleDriveLink });
   try {
-    const note = new Note({ title, classLevel, subject, chapter, order, googleDriveLink });
+    const note = new Note({ title, classLevel, group, subject, category, chapter, order, googleDriveLink });
     await note.save();
     console.log('Note saved successfully:', note);
     res.status(201).json(note);
@@ -20,10 +20,13 @@ router.post('/', auth, admin, async (req, res) => {
 
 // Get all notes - Public
 router.get('/', async (req, res) => {
-  const { classLevel, subject, title } = req.query;
+  const { classLevel, group, subject, category, title, chapter } = req.query;
   const query = {};
   if (classLevel) query.classLevel = classLevel;
+  if (group) query.group = group;
   if (subject) query.subject = subject;
+  if (category) query.category = category;
+  if (chapter) query.chapter = chapter;
   if (title) query.title = { $regex: title, $options: 'i' };
   try {
     // Sort by order (ascending) then by title (ascending)
