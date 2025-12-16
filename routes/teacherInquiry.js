@@ -8,15 +8,19 @@ router.post('/', async (req, res) => {
     const { name, email, phone, subject, message } = req.body;
     if (!name || !email || !message) return res.status(400).json({ msg: 'Missing fields' });
 
-    // Explicit SMTP configuration to avoid timeouts on cloud hosting
+    // Explicit SMTP configuration with SSL to avoid timeouts
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // true for 465, false for other ports
+      port: 465,
+      secure: true, // true for 465, false for other ports
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      // Increase connection timeout
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000
     });
 
     await transporter.sendMail({
@@ -28,8 +32,17 @@ router.post('/', async (req, res) => {
 
     res.json({ ok: true });
   } catch (err) {
-    console.error('Teacher inquiry error:', err);
-    res.status(500).json({ msg: 'Failed to send request' });
+    console.error('Teacher inquiry error detailed:', {
+      message: err.message,
+      code: err.code,
+      response: err.response,
+      stack: err.stack
+    });
+    res.status(500).json({
+      msg: 'Failed to send request',
+      error: err.message,
+      code: err.code
+    });
   }
 });
 

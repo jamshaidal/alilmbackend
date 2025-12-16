@@ -9,15 +9,19 @@ router.post('/', async (req, res) => {
     if (!name || !email || !message) return res.status(400).json({ msg: 'Missing fields' });
 
     // Basic example emailer; configure with your env
-    // Explicit SMTP configuration to avoid timeouts on cloud hosting
+    // Explicit SMTP configuration with SSL to avoid timeouts
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // true for 465, false for other ports
+      port: 465,
+      secure: true, // true for 465, false for other ports
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      // Increase connection timeout
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000
     });
 
     await transporter.sendMail({
